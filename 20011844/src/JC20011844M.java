@@ -114,26 +114,24 @@ public class JC20011844M extends JFrame {
 					return;
 				}
 				
-
-				if (flag == 0) {
-					String text =textfield.getText().toLowerCase();
-					if(text.equals("doctors")||text.equals("nurses")||text.equals("patients")||text.equals("treatments")||text.equals("charts")) {
+				String text = textfield.getText();
+				String[] tmpText = text.split(" ");
+				String tableText = tmpText[2].toLowerCase();
+				System.out.println(tableText);
+				if(tableText.equals("doctors")||tableText.equals("nurses")||tableText.equals("patients")||tableText.equals("treatments")||tableText.equals("charts")) {
 					tablename = textfield.getText();
 					flag = 1;
 					textfield.setText("");
-					state.setText("table input success. please enter information");
-					}
-					else {
-						state.setText("input error");
-						textfield.setText("");
-						return;
-					}
-				} else if (flag == 1) {
-					insertInfo = textfield.getText();
-					flag = 0;
-					insert(tablename, insertInfo);
-					textfield.setText("");
+					insert(text);
+					state.setText("success");
+					selectAll();
 				}
+				else {
+					state.setText("input error");
+					textfield.setText("");
+					return;
+				}
+			
 				
 			}
 		});
@@ -416,9 +414,8 @@ public class JC20011844M extends JFrame {
 
 	}
 
-	void insert(String tablename, String tableInfo) {
-		System.out.println("tablename = " + tablename + ", tableinfo = " + tableInfo);
-		String query = "insert into " + tablename + " values (" + tableInfo + ");"; /* SQL 문 */
+	void insert(String query) {
+		
 		System.out.println(query);
 		try { /* 데이터베이스에 질의 결과를 가져오는 과정 */
 			Statement stmt = con.createStatement();
