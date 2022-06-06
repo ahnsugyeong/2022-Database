@@ -84,7 +84,6 @@ public class JC20011844M extends JFrame {
 		String tablename = "";
 		String insertInfo = "";
 		JLabel state = new JLabel("state: ");
-		JLabel label = new JLabel("exeption: ");
 		Manager(){
 			
 			setTitle("20011844 안수경 - 관리자");
@@ -96,26 +95,20 @@ public class JC20011844M extends JFrame {
 			String url = "jdbc:mysql://localhost:3306/madang?&serverTimezone=Asia/Seoul";
 			String userid = "madang";
 			String pwd = "madang";
-			c.add(label);
-			label.setSize(600, 30);
-			label.setLocation(10,610);
+			
 			try { /* 드라이버를 찾는 과정 */
 				Class.forName("com.mysql.cj.jdbc.Driver");
 				System.out.println("드라이버 로드 성공");
-				label.setText("No exception!");
 			} catch (ClassNotFoundException e) {
-				//e.printStackTrace();
-				label.setText(e.getMessage());
+				e.printStackTrace();
 			}
 
 			try {
 				System.out.println("데이터베이스 연결 준비...");
 				con = DriverManager.getConnection(url, userid, pwd);
 				System.out.println("데이터베이스 연결 성공");
-				label.setText("No exception!");
 			} catch (SQLException e) {
-				//e.printStackTrace();
-				label.setText(e.getMessage());
+				e.printStackTrace();
 			}
 			// 초기 테이블 설정
 			resetAll();
@@ -157,50 +150,33 @@ public class JC20011844M extends JFrame {
 		
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if(textfield.getText().equals("")) {
-						state.setText("please input!!");
-						return;
-					}
-					String text = textfield.getText();
-					String[] tmpText = text.split(" ");
-					String tableText = tmpText[2];
-					String tableText2 = tmpText[0];
-					System.out.println(tableText);
-					if (tableText2.equals("DELETE")) {
-						tablename = textfield.getText();
-						flag = 1;
-						textfield.setText("");
-						delete(text);
-						state.setText("success");
-					}
-					else if (tableText2.equals("UPDATE")) {
-						tablename = textfield.getText();
-						flag = 1;
-						textfield.setText("");
-						update(text);
-						state.setText("success");
-					}
-					else if (tableText2.equals("INSERT")) {
-						tablename = textfield.getText();
-						flag = 1;
-						textfield.setText("");
-						insert(text);
-						state.setText("success");
-					}
-					/*else if(tableText.equals("Movie")||tableText.equals("Theater")||tableText.equals("Movietime")||tableText.equals("Seat")
-							||tableText.equals("Customer")||tableText.equals("Reservation")||tableText.equals("Ticket")) {
-						tablename = textfield.getText();
-						flag = 1;
-						textfield.setText("");
-						insert(text);
-						state.setText("success");
-						//selectAll();
-					}*/
-					else {
-						state.setText("input error");
-						textfield.setText("");
-						return;
-					}
+					
+					
+					
+//					if(textfield.getText().equals("")) {
+//						state.setText("please input!!");
+//						return;
+//					}
+//					
+//					String text = textfield.getText();
+//					String[] tmpText = text.split(" ");
+//					String tableText = tmpText[2].toLowerCase();
+//					System.out.println(tableText);
+//					if(tableText.equals("doctors")||tableText.equals("nurses")||tableText.equals("patients")||tableText.equals("treatments")||tableText.equals("charts")) {
+//						tablename = textfield.getText();
+//						flag = 1;
+//						textfield.setText("");
+//						//insert(text);
+//						state.setText("success");
+//						//selectAll();
+//					}
+//					else {
+//						state.setText("input error");
+//						textfield.setText("");
+//						return;
+//					}
+				
+					
 				}
 			});
 			
@@ -225,104 +201,7 @@ public class JC20011844M extends JFrame {
 			c.setFocusable(true);
 			c.requestFocus();
 		}
-		void delete(String query) {
-			System.out.println(query);
-			try { /* 데이터베이스에 질의 결과를 가져오는 과정 */
-				Statement stmt = con.createStatement();
-				resetAll();
-				stmt.execute("ALTER TABLE Movietime DROP FOREIGN KEY Movietime_ibfk_1;");
-				stmt.execute("ALTER TABLE Movietime DROP INDEX movie_number;");
-				stmt.execute("ALTER TABLE Movietime DROP FOREIGN KEY Movietime_ibfk_2;");
-				stmt.execute("ALTER TABLE Movietime DROP INDEX theater_number;");
-				
-				stmt.execute("ALTER TABLE Seat DROP FOREIGN KEY Seat_ibfk_1;");
-				stmt.execute("ALTER TABLE Seat DROP INDEX theater_number;");
-				stmt.execute("ALTER TABLE Reservation DROP FOREIGN KEY Reservation_ibfk_1;");
-				stmt.execute("ALTER TABLE Reservation DROP INDEX customer_id;");
-				
-				stmt.execute("ALTER TABLE Ticket DROP FOREIGN KEY Ticket_ibfk_1;");
-				stmt.execute("ALTER TABLE Ticket DROP INDEX movietime_number;");
-				stmt.execute("ALTER TABLE Ticket DROP FOREIGN KEY Ticket_ibfk_2;");
-				stmt.execute("ALTER TABLE Ticket DROP INDEX theater_number;");
-				stmt.execute("ALTER TABLE Ticket DROP FOREIGN KEY Ticket_ibfk_3;");
-				stmt.execute("ALTER TABLE Ticket DROP INDEX seat_number;");
-				stmt.execute("ALTER TABLE Ticket DROP FOREIGN KEY Ticket_ibfk_4;");
-				
-				stmt.execute("ALTER TABLE Ticket DROP INDEX reservation_number;");
-				stmt.execute("ALTER TABLE Seat ADD FOREIGN KEY (theater_number) REFERENCES Theater(theater_number) ON DELETE SET NULL;");
-				stmt.execute("ALTER TABLE Reservation ADD FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE SET NULL; ");
-				stmt.execute("ALTER TABLE Movietime ADD FOREIGN KEY (movie_number) REFERENCES Movie(movie_number) ON DELETE SET NULL;");
-				stmt.execute("ALTER TABLE Movietime ADD FOREIGN KEY (theater_number) REFERENCES Theater(theater_number) ON DELETE SET NULL;");
-				stmt.execute("ALTER TABLE Ticket ADD FOREIGN KEY (movietime_number) REFERENCES Movietime(movietime_number) ON DELETE SET NULL; ");
-				stmt.execute("ALTER TABLE Ticket ADD FOREIGN KEY (seat_number) REFERENCES Seat(seat_number) ON DELETE SET NULL; ");
-				stmt.execute("ALTER TABLE Ticket ADD FOREIGN KEY (theater_number) REFERENCES Theater(theater_number) ON DELETE SET NULL; ");
-				stmt.execute("ALTER TABLE Ticket ADD FOREIGN KEY (reservation_number) REFERENCES Reservation(reservation_number) ON DELETE SET NULL;");
-				
-				stmt.execute(query);
-				System.out.println("insert success");
-				label.setText("No exception!");
-				
-			} catch (SQLException e) {
-				//e.printStackTrace();
-				label.setText(e.getMessage());
-			}
-		}
-		void update(String query) {
-			System.out.println(query);
-			try { /* 데이터베이스에 질의 결과를 가져오는 과정 */
-				Statement stmt = con.createStatement();
-				resetAll();
-				stmt.execute("ALTER TABLE Movietime DROP FOREIGN KEY Movietime_ibfk_1;");
-				stmt.execute("ALTER TABLE Movietime DROP INDEX movie_number;");
-				stmt.execute("ALTER TABLE Movietime DROP FOREIGN KEY Movietime_ibfk_2;");
-				stmt.execute("ALTER TABLE Movietime DROP INDEX theater_number;");
-				
-				stmt.execute("ALTER TABLE Seat DROP FOREIGN KEY Seat_ibfk_1;");
-				stmt.execute("ALTER TABLE Seat DROP INDEX theater_number;");
-				stmt.execute("ALTER TABLE Reservation DROP FOREIGN KEY Reservation_ibfk_1;");
-				stmt.execute("ALTER TABLE Reservation DROP INDEX customer_id;");
-				
-				stmt.execute("ALTER TABLE Ticket DROP FOREIGN KEY Ticket_ibfk_1;");
-				stmt.execute("ALTER TABLE Ticket DROP INDEX movietime_number;");
-				stmt.execute("ALTER TABLE Ticket DROP FOREIGN KEY Ticket_ibfk_2;");
-				stmt.execute("ALTER TABLE Ticket DROP INDEX theater_number;");
-				stmt.execute("ALTER TABLE Ticket DROP FOREIGN KEY Ticket_ibfk_3;");
-				stmt.execute("ALTER TABLE Ticket DROP INDEX seat_number;");
-				stmt.execute("ALTER TABLE Ticket DROP FOREIGN KEY Ticket_ibfk_4;");
-				stmt.execute("ALTER TABLE Ticket DROP INDEX reservation_number;");
-				
-				stmt.execute("ALTER TABLE Movietime ADD FOREIGN KEY (movie_number) REFERENCES Movie(movie_number) ON UPDATE SET NULL;");
-				stmt.execute("ALTER TABLE Movietime ADD FOREIGN KEY (theater_number) REFERENCES Theater(theater_number) ON UPDATE SET NULL;");
-				stmt.execute("ALTER TABLE Seat ADD FOREIGN KEY (theater_number) REFERENCES Theater(theater_number) ON UPDATE SET NULL;");
-				stmt.execute("ALTER TABLE Reservation ADD FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON UPDATE SET NULL; ");
-				stmt.execute("ALTER TABLE Ticket ADD FOREIGN KEY (movietime_number) REFERENCES Movietime(movietime_number) ON UPDATE SET NULL; ");
-				stmt.execute("ALTER TABLE Ticket ADD FOREIGN KEY (seat_number) REFERENCES Seat(seat_number) ON UPDATE SET NULL; ");
-				stmt.execute("ALTER TABLE Ticket ADD FOREIGN KEY (theater_number) REFERENCES Theater(theater_number) ON UPDATE SET NULL; ");
-				stmt.execute("ALTER TABLE Ticket ADD FOREIGN KEY (reservation_number) REFERENCES Reservation(reservation_number) ON UPDATE SET NULL;");
-				stmt.execute(query);
-				System.out.println("insert success");
-				label.setText("No exception!");
-				
-			} catch (SQLException e) {
-				
-				//e.printStackTrace();
-				label.setText(e.getMessage());
-			}
-		}
-		void insert(String query) {
-			
-			System.out.println(query);
-			try { /* 데이터베이스에 질의 결과를 가져오는 과정 */
-				Statement stmt = con.createStatement();
-				stmt.execute(query);
-				System.out.println("insert success");
-				label.setText("No exception!");
-				
-			} catch (SQLException e) {
-				//e.printStackTrace();
-				label.setText(e.getMessage());
-			}
-		}
+		
 		void resetAll() {
 			String reset_query = "DROP TABLE IF EXISTS ";
 			
@@ -741,13 +620,10 @@ public class JC20011844M extends JFrame {
 						stmt.executeUpdate("INSERT INTO Ticket VALUES(117, 12, 12, 127, NULL, FALSE, 9000, 8000);");
 						stmt.executeUpdate("INSERT INTO Ticket VALUES(118, 12, 12, 128, NULL, FALSE, 9000, 7000);");
 						stmt.executeUpdate("INSERT INTO Ticket VALUES(119, 12, 12, 129, NULL, FALSE, 9000, 6000);");
-						stmt.executeUpdate("INSERT INTO Ticket VALUES(120, 12, 12, 1210, NULL, FALSE, 9000, 5000);");	
-						
-						label.setText("No exception!");
+						stmt.executeUpdate("INSERT INTO Ticket VALUES(120, 12, 12, 1210, NULL, FALSE, 9000, 5000);");				
 		
 			} catch (SQLException e) {
-				//e.printStackTrace();
-				label.setText(e.getMessage());
+				e.printStackTrace();
 			}
 		}
 		void searchAll() {
@@ -772,8 +648,7 @@ public class JC20011844M extends JFrame {
 								columnStr += rs.getString(k) + "\t";
 							}
 							else if(rsmd.getColumnTypeName(k).equals("INT")) {
-								if (Integer.toString(rs.getInt(k)).equals("0"))  columnStr +="null\t";
-								else columnStr += Integer.toString(rs.getInt(k)) + "\t";
+								columnStr += Integer.toString(rs.getInt(k)) + "\t";
 							}
 							else if(rsmd.getColumnTypeName(k).equals("BIT")) {
 								columnStr += Boolean.toString(rs.getBoolean(k)) + "\t";
@@ -787,11 +662,9 @@ public class JC20011844M extends JFrame {
 					resultStr += columnStr + "\n\n\n";
 				}
 				ResultLabel.setText(resultStr);
-				label.setText("No exception!");
 				
 			} catch (SQLException e) {
-				//e.printStackTrace();
-				label.setText(e.getMessage());
+				e.printStackTrace();
 			}
 		}
 		
@@ -827,7 +700,7 @@ public class JC20011844M extends JFrame {
 		JScrollPane update_movietime_reservation_jscp;
 		
 		
-		JLabel exep = new JLabel("exeption: ");
+		
 		
 		LinkedList<Integer> reservation_numbers;
 		
@@ -844,26 +717,20 @@ public class JC20011844M extends JFrame {
 			String url = "jdbc:mysql://localhost:3306/madang?&serverTimezone=Asia/Seoul";
 			String userid = "madang";
 			String pwd = "madang";
-			c.add(exep);
-			exep.setSize(600, 30);
-			exep.setLocation(10,610);
+
 			try { /* 드라이버를 찾는 과정 */
 				Class.forName("com.mysql.cj.jdbc.Driver");
 				System.out.println("드라이버 로드 성공");
-				exep.setText("No exception!");
 			} catch (ClassNotFoundException e) {
-				//e.printStackTrace();
-				exep.setText(e.getMessage());
+				e.printStackTrace();
 			}
 
 			try {
 				System.out.println("데이터베이스 연결 준비...");
 				con = DriverManager.getConnection(url, userid, pwd);
 				System.out.println("데이터베이스 연결 성공");
-				exep.setText("No exception!");
 			} catch (SQLException e) {
-				//e.printStackTrace();
-				exep.setText(e.getMessage());
+				e.printStackTrace();
 			}
 			c.setLayout(null);
 			
@@ -945,11 +812,10 @@ public class JC20011844M extends JFrame {
 						stmt.executeUpdate("delete from reservation where customer_id = '"+customer_id+"' and reservation_number = "+reservation_number+";");
 						stmt.executeUpdate("update seat set seat_use = FALSE where seat_number = "+seat_number+";");
 						searchAllReservation();
-						exep.setText("No exception!");
 						
 					} catch (SQLException e1) {
-						//e1.printStackTrace();
-						exep.setText(e1.getMessage());
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
 				}
 				
@@ -980,11 +846,10 @@ public class JC20011844M extends JFrame {
 						new MovieUpdateReservation(ticket_number);
 						
 						searchAllReservation();
-						exep.setText("No exception!");
 						
 					} catch (SQLException e1) {
-						//e1.printStackTrace();
-						exep.setText(e1.getMessage());
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
 				}
 				
@@ -1021,12 +886,35 @@ public class JC20011844M extends JFrame {
 							new MovieTimeUpdateReservation(ticket_number, movietime_number, movie_number);
 							
 							searchAllReservation();
-							exep.setText("No exception!");
 							
 						} catch (SQLException e1) {
-							//e1.printStackTrace();
-							exep.setText(e1.getMessage());
-						}	
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
+//						stmt = con.createStatement();
+//						String movie_name = (String) reservation_table.getValueAt(reservation_table.getSelectedRow(), 0);
+//						String movie_date = (String) reservation_table.getValueAt(reservation_table.getSelectedRow(), 1);
+//						int theater_number = Integer.parseInt((String) reservation_table.getValueAt(reservation_table.getSelectedRow(), 2));
+//						int seat_number = Integer.parseInt((String) reservation_table.getValueAt(reservation_table.getSelectedRow(), 3));
+//						int ticket_price = Integer.parseInt((String) reservation_table.getValueAt(reservation_table.getSelectedRow(), 4));
+//						
+//						rs = stmt.executeQuery("select ticket.ticket_number, ticket.movietime_number from  movie, ticket, reservation\r\n"
+//								+ "where movie.movie_name = '"+movie_name+"' and movie.movie_date = '"+movie_date+"' and ticket.theater_number = "+theater_number+" and ticket.seat_number = "+seat_number+" and ticket.ticket_price = "+ticket_price+" and reservation.reservation_number = ticket.reservation_number;");
+//						rs.next();
+//						
+//						int ticket_number = rs.getInt(1);
+//						int movietime_number = rs.getInt(2);
+//						
+//						if (movietime_number%2==0) {
+//							System.out.println("1");
+//							stmt.executeUpdate("update ticket set movietime_number = "+(movietime_number-1)+" where ticket_number = "+ticket_number+";");
+//						}
+//						else {
+//							stmt.executeUpdate("update ticket set movietime_number = "+(movietime_number+1)+" where ticket_number = "+ticket_number+";");
+//						}
+						
+						
 					} 
 			});			
 			
@@ -1061,7 +949,6 @@ public class JC20011844M extends JFrame {
 					
 					
 					reservation_contents.add(tmp_string);
-					
 				}
 				
 				String[][] reservation_table_contents = new String[reservation_contents.size()][6];
@@ -1087,10 +974,9 @@ public class JC20011844M extends JFrame {
 				c.add(reservation_jscp);
 				reservation_jscp.setSize(650, 150);
 				reservation_jscp.setLocation(20, 280);
-				exep.setText("No exception!");
 			} catch (SQLException e1) {
-				//e1.printStackTrace();
-				exep.setText(e1.getMessage());
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 			
 		}
@@ -1172,10 +1058,8 @@ public class JC20011844M extends JFrame {
 				c.add(jscp);
 				jscp.setSize(650, 150);
 				jscp.setLocation(20, 70);
-				exep.setText("No exception!");
 			} catch (SQLException e) {
-				//e.printStackTrace();
-				exep.setText(e.getMessage());
+				e.printStackTrace();
 			}
 		}
 		
@@ -1195,21 +1079,22 @@ public class JC20011844M extends JFrame {
 					
 					try {						
 						stmt = con.createStatement();
-						rs = stmt.executeQuery("select mt.movie_number, mt.movietime_number, mt.theater_number\r\n"
+						rs = stmt.executeQuery("select mt.movietime_number, mt.theater_number\r\n"
 								+ "from movietime mt\r\n"
 								+ "where mt.movie_number = (select m.movie_number from movie m where m.movie_name = '"+movie_name+"') ;");
 						rs.next();
-						int movie_number = rs.getInt(1);
-						movietime_number = rs.getInt(2);
-						theater_number = rs.getInt(3);
-						
-						rs = stmt.executeQuery("select ticket_number, seat_number from ticket where ticket_out = FALSE and movietime_number in (select movietime_number from movietime where movie_number = "+movie_number+");");
+						movietime_number = rs.getInt(1);
+						theater_number = rs.getInt(2);
+						System.out.println(movietime_number +" "+theater_number);
+						rs = stmt.executeQuery("select seat_number, reservation_number from ticket where ticket_out = FALSE and movietime_number = "+movietime_number+";");
 						rs.next();
+						seat_number = rs.getInt(1);
 						
+						
+						rs = stmt.executeQuery("SELECT * FROM ticket WHERE theater_number = "+theater_number+" and seat_number ="+seat_number+" and movietime_number = "+movietime_number+";");
+						rs.next();
 						int ticket_number = rs.getInt(1);
-						seat_number = rs.getInt(2);
-						reservation_number = ticket_number;
-			
+						int reservation_number = ticket_number;
 						
 						// seat_use TRUE로 바꿔줌
 						stmt.executeUpdate("UPDATE Seat SET seat_use = TRUE WHERE theater_number = "+theater_number+" and seat_number = "+seat_number+";");
@@ -1219,11 +1104,10 @@ public class JC20011844M extends JFrame {
 						stmt.executeUpdate("UPDATE Ticket SET reservation_number = "+reservation_number+", ticket_out = TRUE WHERE ticket_number = "+ticket_number+";");
 						
 						searchAllReservation();
-						
-						exep.setText("No exception!");
 							
 						} catch (SQLException e1) {
-							exep.setText(e1.getMessage());
+							// label 만들어서 거기에 이거 출력해주면 됨. settext!!
+							System.out.println(e1.getMessage());
 						}
 				});
 			}
@@ -1316,7 +1200,7 @@ public class JC20011844M extends JFrame {
 			
 			int reservation_number = 0;
 			
-			JLabel exep = new JLabel("exeption: ");
+				
 			ReservationInfo(int reservation_number_in){
 				reservation_number = reservation_number_in;
 				
@@ -1329,26 +1213,20 @@ public class JC20011844M extends JFrame {
 				String url = "jdbc:mysql://localhost:3306/madang?&serverTimezone=Asia/Seoul";
 				String userid = "madang";
 				String pwd = "madang";
-				c.add(exep);
-				exep.setSize(600, 30);
-				exep.setLocation(10,610);
+	
 				try { /* 드라이버를 찾는 과정 */
 					Class.forName("com.mysql.cj.jdbc.Driver");
 					System.out.println("드라이버 로드 성공");
-					exep.setText("No exeption!");
 				} catch (ClassNotFoundException e) {
-					//e.printStackTrace();
-					exep.setText(e.getMessage());
+					e.printStackTrace();
 				}
 	
 				try {
 					System.out.println("데이터베이스 연결 준비...");
 					con = DriverManager.getConnection(url, userid, pwd);
 					System.out.println("데이터베이스 연결 성공");
-					exep.setText("No exeption!");
 				} catch (SQLException e) {
-					//e.printStackTrace();
-					exep.setText(e.getMessage());
+					e.printStackTrace();
 				}
 				c.setLayout(null);
 				
@@ -1451,11 +1329,10 @@ public class JC20011844M extends JFrame {
 					c.add(reservation_info_jscp_3);
 					reservation_info_jscp_3.setSize(650, 150);
 					reservation_info_jscp_3.setLocation(20, 370);
-					exep.setText("No exeption!");
 					
 				} catch (SQLException e) {
-					//e.printStackTrace();
-					exep.setText(e.getMessage());
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		}
@@ -1467,8 +1344,7 @@ public class JC20011844M extends JFrame {
 			
 			int ticket_number = 0;
 			
-			int reservation_number = 0;
-			JLabel exep = new JLabel("exeption: ");
+			int reservation_number = 0;		
 			MovieUpdateReservation(int ticket_number_in){
 				ticket_number = ticket_number_in;
 				System.out.println("ticket_number = "+ticket_number);
@@ -1481,26 +1357,20 @@ public class JC20011844M extends JFrame {
 				String url = "jdbc:mysql://localhost:3306/madang?&serverTimezone=Asia/Seoul";
 				String userid = "madang";
 				String pwd = "madang";
-				c.add(exep);
-				exep.setSize(600, 30);
-				exep.setLocation(10,610);
+	
 				try { /* 드라이버를 찾는 과정 */
 					Class.forName("com.mysql.cj.jdbc.Driver");
 					System.out.println("드라이버 로드 성공");
-					exep.setText("No exeption!");
 				} catch (ClassNotFoundException e) {
-					//e.printStackTrace();
-					exep.setText(e.getMessage());
+					e.printStackTrace();
 				}
 	
 				try {
 					System.out.println("데이터베이스 연결 준비...");
 					con = DriverManager.getConnection(url, userid, pwd);
 					System.out.println("데이터베이스 연결 성공");
-					exep.setText("No exeption!");
 				} catch (SQLException e) {
-					//e.printStackTrace();
-					exep.setText(e.getMessage());
+					e.printStackTrace();
 				}
 				c.setLayout(null);
 				
@@ -1539,13 +1409,12 @@ public class JC20011844M extends JFrame {
 					c.add(update_movie_reservation_jscp);
 					update_movie_reservation_jscp.setSize(650, 300);
 					update_movie_reservation_jscp.setLocation(20, 30);
-					exep.setText("No exeption!");
+				
 				
 					
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
-					//e.printStackTrace();
-					exep.setText(e.getMessage());
+					e.printStackTrace();
 				}
 			}
 			
@@ -1562,7 +1431,6 @@ public class JC20011844M extends JFrame {
 			int seat_number = 0;
 			int ticket_number = 0;
 			int movie_number = 0;
-			
 			public MovieUpdateTableCell(int ticket_number_in) {
 				ticket_number = ticket_number_in;
 				jb = new JButton("update");
@@ -1577,8 +1445,8 @@ public class JC20011844M extends JFrame {
 						rs = stmt.executeQuery("select reservation_number from ticket where ticket_number = "+ticket_number+";");
 						rs.next();
 						int original_reservation = rs.getInt(1);
-												
-						int original_ticket_number = ticket_number;
+						System.out.println(original_reservation);						
+						
 				
 						
 						// 새로 선택한 예매 내역 등록
@@ -1601,22 +1469,20 @@ public class JC20011844M extends JFrame {
 						// 선택된 좌석번호 = 예약번호
 						stmt.executeUpdate("INSERT INTO Reservation VALUES("+reservation_number+", 'cash', TRUE, 9000, '"+customer_id+"', STR_TO_DATE('2021-01-01','%Y-%m-%d'));");
 						// 선택된 좌석번호의 티켓의 예약번호에 좌석번호 대입 & 티켓 발권 TRUE로
-						stmt.executeUpdate("UPDATE Ticket SET reservation_number = "+reservation_number+", ticket_out = TRUE WHERE seat_number = "+seat_number+" and ticket_number = "+ticket_number+";");
+						stmt.executeUpdate("UPDATE Ticket SET reservation_number = "+reservation_number+", ticket_out = TRUE WHERE seat_number = "+seat_number+";");
 						
 						
 						
 						// 선택한 기존 예매 내역 삭제
-						stmt.executeUpdate("update ticket set ticket_out = FALSE, reservation_number = NULL where ticket_number = "+original_ticket_number+";\r\n"
+						stmt.executeUpdate("update ticket set ticket_out = FALSE, reservation_number = NULL where ticket_number = "+ticket_number+";\r\n"
 								+ "");
-						stmt.executeUpdate("update seat, ticket set seat_use = FALSE  where seat.seat_number = ticket.seat_number and ticket.ticket_number = "+original_ticket_number+";");
+						stmt.executeUpdate("update seat, ticket set seat_use = FALSE  where seat.seat_number = ticket.seat_number and ticket.ticket_number = "+ticket_number+";");
 						stmt.executeUpdate("delete reservation from reservation where reservation_number ="+original_reservation+";");
 						
 						searchAllReservation();
-						exep.setText("No exeption!");
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
-						//e1.printStackTrace();
-						exep.setText(e1.getMessage());
+						e1.printStackTrace();
 					}					
 				});
 			}
@@ -1654,7 +1520,6 @@ public class JC20011844M extends JFrame {
 			int movie_number = 0;
 			
 			int reservation_number = 0;		
-			JLabel exep = new JLabel("exeption: ");
 			MovieTimeUpdateReservation(int ticket_number_in, int movietime_number_in, int movie_number_in){
 				ticket_number = ticket_number_in;
 				movietime_number = movietime_number_in;
@@ -1670,26 +1535,20 @@ public class JC20011844M extends JFrame {
 				String url = "jdbc:mysql://localhost:3306/madang?&serverTimezone=Asia/Seoul";
 				String userid = "madang";
 				String pwd = "madang";
-				c.add(exep);
-				exep.setSize(600, 30);
-				exep.setLocation(10,610);
+	
 				try { /* 드라이버를 찾는 과정 */
 					Class.forName("com.mysql.cj.jdbc.Driver");
 					System.out.println("드라이버 로드 성공");
-					exep.setText("No exception!");
 				} catch (ClassNotFoundException e) {
-					//e.printStackTrace();
-					exep.setText(e.getMessage());
+					e.printStackTrace();
 				}
 	
 				try {
 					System.out.println("데이터베이스 연결 준비...");
 					con = DriverManager.getConnection(url, userid, pwd);
 					System.out.println("데이터베이스 연결 성공");
-					exep.setText("No exception!");
 				} catch (SQLException e) {
-					//e.printStackTrace();
-					exep.setText(e.getMessage());
+					e.printStackTrace();
 				}
 				c.setLayout(null);
 				
@@ -1730,11 +1589,10 @@ public class JC20011844M extends JFrame {
 					update_movietime_reservation_jscp.setLocation(20, 30);
 				
 					searchAllReservation();
-					exep.setText("No exception!");
 					
 				} catch (SQLException e) {
-					//e.printStackTrace();
-					exep.setText(e.getMessage());
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 			
@@ -1794,11 +1652,9 @@ public class JC20011844M extends JFrame {
 						stmt.executeUpdate("delete reservation from reservation where reservation_number = "+original_reservation+";");
 						
 						searchAllReservation();
-						exep.setText("No exeption!");
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
-						//e1.printStackTrace();
-						exep.setText(e1.getMessage());
+						e1.printStackTrace();
 					}					
 				});
 			}

@@ -1203,11 +1203,10 @@ public class JC20011844M extends JFrame {
 						movietime_number = rs.getInt(2);
 						theater_number = rs.getInt(3);
 						
-						rs = stmt.executeQuery("select ticket_number, seat_number from ticket where ticket_out = FALSE and movietime_number in (select movietime_number from movietime where movie_number = "+movie_number+");");
+						rs = stmt.executeQuery("select ticket_number, seat_number, reservation_number from ticket where ticket_out = FALSE and movietime_number in (select movietime_number from movietime where movie_number = "+movie_number+");");
 						rs.next();
-						
-						int ticket_number = rs.getInt(1);
-						seat_number = rs.getInt(2);
+						seat_number = rs.getInt(1);
+						int ticket_number = rs.getInt(2);
 						reservation_number = ticket_number;
 			
 						

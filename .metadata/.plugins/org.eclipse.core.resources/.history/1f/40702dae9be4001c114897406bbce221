@@ -1195,21 +1195,22 @@ public class JC20011844M extends JFrame {
 					
 					try {						
 						stmt = con.createStatement();
-						rs = stmt.executeQuery("select mt.movie_number, mt.movietime_number, mt.theater_number\r\n"
+						rs = stmt.executeQuery("select mt.movietime_number, mt.theater_number\r\n"
 								+ "from movietime mt\r\n"
 								+ "where mt.movie_number = (select m.movie_number from movie m where m.movie_name = '"+movie_name+"') ;");
 						rs.next();
-						int movie_number = rs.getInt(1);
-						movietime_number = rs.getInt(2);
-						theater_number = rs.getInt(3);
-						
-						rs = stmt.executeQuery("select ticket_number, seat_number from ticket where ticket_out = FALSE and movietime_number in (select movietime_number from movietime where movie_number = "+movie_number+");");
+						movietime_number = rs.getInt(1);
+						theater_number = rs.getInt(2);
+						System.out.println(movietime_number +" "+theater_number);
+						rs = stmt.executeQuery("select seat_number, reservation_number from ticket where ticket_out = FALSE and movietime_number = "+movietime_number+";");
 						rs.next();
+						seat_number = rs.getInt(1);
 						
+						
+						rs = stmt.executeQuery("SELECT * FROM ticket WHERE theater_number = "+theater_number+" and seat_number ="+seat_number+" and movietime_number = "+movietime_number+";");
+						rs.next();
 						int ticket_number = rs.getInt(1);
-						seat_number = rs.getInt(2);
-						reservation_number = ticket_number;
-			
+						int reservation_number = ticket_number;
 						
 						// seat_use TRUE로 바꿔줌
 						stmt.executeUpdate("UPDATE Seat SET seat_use = TRUE WHERE theater_number = "+theater_number+" and seat_number = "+seat_number+";");
@@ -1219,7 +1220,6 @@ public class JC20011844M extends JFrame {
 						stmt.executeUpdate("UPDATE Ticket SET reservation_number = "+reservation_number+", ticket_out = TRUE WHERE ticket_number = "+ticket_number+";");
 						
 						searchAllReservation();
-						
 						exep.setText("No exception!");
 							
 						} catch (SQLException e1) {
@@ -1539,7 +1539,6 @@ public class JC20011844M extends JFrame {
 					c.add(update_movie_reservation_jscp);
 					update_movie_reservation_jscp.setSize(650, 300);
 					update_movie_reservation_jscp.setLocation(20, 30);
-					exep.setText("No exeption!");
 				
 					
 				} catch (SQLException e) {
@@ -1577,8 +1576,8 @@ public class JC20011844M extends JFrame {
 						rs = stmt.executeQuery("select reservation_number from ticket where ticket_number = "+ticket_number+";");
 						rs.next();
 						int original_reservation = rs.getInt(1);
-												
-						int original_ticket_number = ticket_number;
+						System.out.println(original_reservation);						
+						
 				
 						
 						// 새로 선택한 예매 내역 등록
@@ -1601,18 +1600,18 @@ public class JC20011844M extends JFrame {
 						// 선택된 좌석번호 = 예약번호
 						stmt.executeUpdate("INSERT INTO Reservation VALUES("+reservation_number+", 'cash', TRUE, 9000, '"+customer_id+"', STR_TO_DATE('2021-01-01','%Y-%m-%d'));");
 						// 선택된 좌석번호의 티켓의 예약번호에 좌석번호 대입 & 티켓 발권 TRUE로
-						stmt.executeUpdate("UPDATE Ticket SET reservation_number = "+reservation_number+", ticket_out = TRUE WHERE seat_number = "+seat_number+" and ticket_number = "+ticket_number+";");
+						stmt.executeUpdate("UPDATE Ticket SET reservation_number = "+reservation_number+", ticket_out = TRUE WHERE seat_number = "+seat_number+";");
 						
 						
 						
 						// 선택한 기존 예매 내역 삭제
-						stmt.executeUpdate("update ticket set ticket_out = FALSE, reservation_number = NULL where ticket_number = "+original_ticket_number+";\r\n"
+						stmt.executeUpdate("update ticket set ticket_out = FALSE, reservation_number = NULL where ticket_number = "+ticket_number+";\r\n"
 								+ "");
-						stmt.executeUpdate("update seat, ticket set seat_use = FALSE  where seat.seat_number = ticket.seat_number and ticket.ticket_number = "+original_ticket_number+";");
+						stmt.executeUpdate("update seat, ticket set seat_use = FALSE  where seat.seat_number = ticket.seat_number and ticket.ticket_number = "+ticket_number+";");
 						stmt.executeUpdate("delete reservation from reservation where reservation_number ="+original_reservation+";");
+						exep.setText("창을 닫고 변경 사항을 확인해주세요!");
 						
 						searchAllReservation();
-						exep.setText("No exeption!");
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
 						//e1.printStackTrace();
@@ -1694,6 +1693,8 @@ public class JC20011844M extends JFrame {
 				c.setLayout(null);
 				
 				try {
+					
+
 					stmt = con.createStatement();
 					System.out.println(movie_number);
 					rs = stmt.executeQuery("select * from movietime where movie_number = "+movie_number+";");
@@ -1794,7 +1795,7 @@ public class JC20011844M extends JFrame {
 						stmt.executeUpdate("delete reservation from reservation where reservation_number = "+original_reservation+";");
 						
 						searchAllReservation();
-						exep.setText("No exeption!");
+						exep.setText("창을 닫고 변경 사항을 확인해주세요!");
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
 						//e1.printStackTrace();
